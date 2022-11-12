@@ -8,4 +8,12 @@ project for:
 
 cargo tauri dev
 
-cargo tauri build
+cargo tauri build --target universal-apple-darwin/aarch64-apple-darwin/x86_64-apple-darwin
+
+- tauri
+- vditor
+
+
+一些坑：
+    1. toolbar 怎么设置居中 以及 失焦后消失 做不到像qq 网易云音乐的那个效果
+    2. minWidth 和 minHeight 必须同时设置

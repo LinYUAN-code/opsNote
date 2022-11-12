@@ -2,34 +2,58 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-use tauri::{
-    CustomMenuItem, LogicalSize, Manager, Menu, MenuItem, Submenu, SystemTray, SystemTrayEvent,
-    SystemTrayMenu, SystemTrayMenuItem,
-};
+use app::{fs::*, menu::create_menu, tray::create_tray, window_ext::WindowExt};
+use tauri::{generate_handler, LogicalSize, Manager, SystemTrayEvent, WindowEvent};
 
 fn main() {
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
-    let about = CustomMenuItem::new("about".to_string(), "About");
-    let tray_menu = SystemTrayMenu::new()
-        .add_item(quit)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(hide)
-        .add_native_item(SystemTrayMenuItem::Separator)
-        .add_item(about);
-    let tray = SystemTray::new().with_menu(tray_menu);
+    let builder = tauri::Builder::default();
+    let context = tauri::generate_context!();
+    let tray = create_tray();
+    let menu = create_menu(&context);
 
-    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
-    let close = CustomMenuItem::new("close".to_string(), "Close");
-    let submenu = Submenu::new("File", Menu::new().add_item(quit).add_item(close));
-    let menu = Menu::new()
-        .add_native_item(MenuItem::Copy)
-        .add_item(CustomMenuItem::new("hide", "Hide"))
-        .add_submenu(submenu);
-
-    tauri::Builder::default()
-        .setup(|_app| Ok(()))
+    builder
+        .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
+            main_window.set_transparent_titlebar();
+            Ok(())
+        })
+        .on_window_event(|event| match event.event() {
+            WindowEvent::Resized(_) | WindowEvent::Moved(_) => {
+                let window = event.window();
+                #[cfg(any(target_os = "windows", target_os = "macos"))]
+                // created event，new window
+                {
+                    window.set_transparent_titlebar();
+                }
+                #[cfg(target_os = "macos")]
+                {
+                    let monitor = window.current_monitor().unwrap().unwrap();
+                    let screen = monitor.size();
+                    let size = &window.outer_size().unwrap();
+                    println!("resize {:?}", size);
+                    event.window().set_toolbar_visible(size != screen);
+                }
+            }
+            WindowEvent::Focused(is_focus) => {
+                println!("focus status {}", is_focus);
+                let window = event.window();
+                #[cfg(target_os = "macos")]
+                {
+                    window.window_focus_status(is_focus.to_owned())
+                }
+            }
+            _ => {}
+        })
         .menu(menu)
+        .on_menu_event(|event| match event.menu_item_id() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            "close" => {
+                event.window().close().unwrap();
+            }
+            _ => {}
+        })
         .system_tray(tray)
         .on_system_tray_event(|app, event| match event {
             SystemTrayEvent::LeftClick {
@@ -88,6 +112,12 @@ fn main() {
             },
             _ => {}
         })
-        .run(tauri::generate_context!())
+        .invoke_handler(generate_handler![
+            open_file_selector,
+            read_file,
+            write_file,
+            read_dir
+        ])
+        .run(context)
         .expect("error while running tauri application");
 }
