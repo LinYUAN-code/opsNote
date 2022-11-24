@@ -1,4 +1,4 @@
-use cocoa::appkit::{NSToolbar, NSWindowToolbarStyle};
+use cocoa::appkit::NSToolbar;
 use objc::msg_send;
 use tauri::Window;
 
@@ -53,7 +53,7 @@ impl WindowExt for Window {
     fn window_focus_status(&self, is_focus: bool) {
         #[cfg(target_os = "macos")]
         unsafe {
-            println!("toolbar {}", self.get_toolbar_visible());
+            // println!("toolbar {}", self.get_toolbar_visible());
             self.set_toolbar_visible(true);
         }
     }

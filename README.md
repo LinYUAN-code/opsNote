@@ -6,6 +6,14 @@ project for:
 = 低代码个性生成 Web 界面 组件化形式（比如 2D 人物组件 音乐播放组件...）
 = 超简单的部署方式 以及博客更新方式
 
+git submodule add https://github.com/LinYUAN-code/vditor.git packages/viditor
+git submodule add https://github.com/LinYUAN-code/linyuan-storage.git packages/linyuan-storage
+
+pnpm i
+
+pnpm link ./packages/viditor
+pnpm link ./packages/linyuan-storage
+
 cargo tauri dev
 
 cargo tauri build --target universal-apple-darwin/aarch64-apple-darwin/x86_64-apple-darwin

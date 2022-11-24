@@ -1,0 +1,27 @@
+.path-item-container {
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  .icon {
+    display: flex;
+    flex-direction: row;
+    .icon-placeholder {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  .file-name {
+    height: 100%;
+    line-height: 30px;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.selected {
+  background-color: red;
+}

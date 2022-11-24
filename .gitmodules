@@ -1,0 +1,6 @@
+[submodule "packages/viditor"]
+	path = packages/viditor
+	url = https://github.com/LinYUAN-code/vditor.git
+[submodule "packages/linyuan-storage"]
+	path = packages/linyuan-storage
+	url = https://github.com/LinYUAN-code/linyuan-storage.git

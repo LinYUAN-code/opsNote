@@ -1,27 +1,35 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import "./Sider.less";
 import Button from "@mui/material/Button";
-import { openFileSelector, readDir } from "../../../../../utils/fs";
+import { openFileSelector, Path, readDir } from "../../../../../utils/fs";
+import PathItem from "./PathItem/PathItem";
+import PathTree from "./PathTree/PathTree";
 
 export default function Sider() {
-  const handleOpenFolder = async () => {
+  const [currentFolderPath, setCcurrentFolderPath] = useState<string>("");
+  const [pathList, setPathList] = useState<Array<Path>>([]);
+  const handleOpenFolder = useCallback(async () => {
     let folderPath = (await openFileSelector({
-      // isSelectDirector: true,
-      allowMultiple: true,
-      allowsFileType: ["md", "js"],
+      isSelectDirector: true,
     })) as string;
-    console.log(folderPath);
-    let res = await readDir(folderPath);
-    console.log("readDir:", res);
-  };
+    setCcurrentFolderPath(folderPath);
+    console.log("select path:", folderPath);
+    let paths = await readDir(folderPath, true);
+    console.log("readDir:", paths);
+    setPathList(paths);
+  }, []);
   return (
-    <div>
-      <div>
-        <div>Open File Folder</div>
-        <Button variant="contained" onClick={handleOpenFolder}>
-          Open Folder
-        </Button>
-      </div>
+    <div className="sider-container">
+      {!currentFolderPath ? (
+        <div className="open-folder-container">
+          <div className="info-text">Open File Folder</div>
+          <Button variant="contained" size="small" onClick={handleOpenFolder}>
+            Open Folder
+          </Button>
+        </div>
+      ) : (
+        <PathTree pathList={pathList} depth={0}></PathTree>
+      )}
     </div>
   );
 }

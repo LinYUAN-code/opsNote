@@ -17,7 +17,6 @@
     "@vitejs/plugin-react": "^2.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "vditor": "^3.8.18",
     "vite-plugin-mpa": "^1.1.4",
     "vue": "^3.2.37"
   },

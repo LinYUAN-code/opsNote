@@ -37,33 +37,65 @@ export function readFile(path: string): Promise<string> {
   return invoke("read_file", { path });
 }
 
-export async function readDir(path: string): Promise<Array<Path>> {
+export async function readDir(
+  path: string,
+  needInit: boolean = false
+): Promise<Array<Path>> {
   const res = (await invoke("read_dir", { path })) as any;
-  return res.map((s: string) => new Path(s));
+  const pathList = res
+    .map((s: string) => new Path(s))
+    .filter((path: Path) => path.isDir || path.fileExtension == "md");
+  if (needInit) {
+    const waitList = pathList.map((path: Path) => path.init());
+    await Promise.all(waitList);
+  }
+  return pathList;
 }
 
 export class Path {
   public isDir: boolean;
   public path: string;
+  public isEmptyDir: boolean | undefined;
+  public _contentCache: string | undefined;
+  private _fileName: string | undefined;
+  private _fileExtension: string | undefined;
   constructor(s: string) {
     this.isDir = s[0] === "0";
     this.path = this.isDir ? s.slice(1) : s;
+
+    let tmp = this.path.split(".");
+    this._fileExtension = tmp[tmp.length - 1];
+    tmp = this.path.split("/");
+    this._fileName = tmp[tmp.length - 1];
   }
-  fileName(): string {
-    return "hello";
+  async init(): Promise<void> {
+    if (this.isDir) {
+      const dirs = await this.readDir(false);
+      this.isEmptyDir = !dirs.length;
+    }
+    return;
+  }
+  get fileName() {
+    return this._fileName;
+  }
+  get fileExtension() {
+    return this._fileExtension;
   }
   async readContent(): Promise<string> {
     if (this.isDir) {
       throw new Error("cant read content with directory");
     }
-    return await readFile(this.path);
+    let content = await readFile(this.path);
+    this._contentCache = content;
+    return this._contentCache;
   }
   async writeContent(content: string): Promise<string> {
     if (this.isDir) {
       throw new Error("cant read content with directory");
     }
+    this._contentCache = content;
     try {
-      const res = (await invoke("read_dir", {
+      const res = (await invoke("write_file", {
         path: this.path,
         content,
       })) as any;
@@ -72,10 +104,10 @@ export class Path {
       return e;
     }
   }
-  async readDir(): Promise<Array<Path>> {
+  async readDir(needInit: boolean = false): Promise<Array<Path>> {
     if (!this.isDir) {
       throw new Error("cant read dir with file");
     }
-    return readDir(this.path);
+    return await readDir(this.path, needInit);
   }
 }

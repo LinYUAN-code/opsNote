@@ -30,12 +30,10 @@ fn main() {
                     let monitor = window.current_monitor().unwrap().unwrap();
                     let screen = monitor.size();
                     let size = &window.outer_size().unwrap();
-                    println!("resize {:?}", size);
                     event.window().set_toolbar_visible(size != screen);
                 }
             }
             WindowEvent::Focused(is_focus) => {
-                println!("focus status {}", is_focus);
                 let window = event.window();
                 #[cfg(target_os = "macos")]
                 {
@@ -51,6 +49,12 @@ fn main() {
             }
             "close" => {
                 event.window().close().unwrap();
+            }
+            "save" => {
+                println!("save shortcut");
+                if let Err(err) = event.window().eval("window['handleRustEvent']('save')") {
+                    println!("shortcut save error: {:?}", err);
+                }
             }
             _ => {}
         })

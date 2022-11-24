@@ -32,11 +32,11 @@ pub fn open_file_selector(
             let mut array: id = msg_send![class!(NSArray), array];
             for type_s in allows_file_type {
                 let nsstring_type = string_to_nsstring(type_s);
-                println!("{:?}", class!(UTType));
+                // println!("{:?}", class!(UTType));
                 let uttype: id =
                     msg_send![class!(UTType), typeWithFilenameExtension: nsstring_type];
                 let identifier: id = msg_send![uttype, identifier];
-                println!("identifier {:?}", c_str_to_string(identifier.UTF8String()));
+                // println!("identifier {:?}", c_str_to_string(identifier.UTF8String()));
                 array = msg_send![array, arrayByAddingObject: uttype];
             }
             let _: id = msg_send![open_panel, setAllowedContentTypes: array];
@@ -46,10 +46,10 @@ pub fn open_file_selector(
         let num = res_id.count();
         let mut ans = Vec::new();
         for i in 0..num {
-            println!("{:?}", res_id.objectAtIndex(i));
+            // println!("{:?}", res_id.objectAtIndex(i));
             ans.push(c_str_to_string(res_id.objectAtIndex(i).path().UTF8String()));
         }
-        println!("{:?}", ans);
+        // println!("{:?}", ans);
         ans
     }
 
@@ -68,6 +68,7 @@ pub fn read_file(path: String) -> Result<String, String> {
 
 #[tauri::command]
 pub fn write_file(path: String, content: String) -> Result<(), String> {
+    println!("{} {}", path, content);
     if let Ok(()) = fs::write(path, content.as_bytes()) {
         Ok(())
     } else {
