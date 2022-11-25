@@ -1,7 +1,9 @@
+#[cfg(target_os = "macos")]
 use cocoa::{
     base::{id, nil},
     foundation::NSString,
 };
+
 use std::ffi::CStr;
 
 pub fn c_str_to_string(c_buf: *const i8) -> String {
@@ -10,6 +12,7 @@ pub fn c_str_to_string(c_buf: *const i8) -> String {
     str_slice.to_owned()
 }
 
+#[cfg(target_os = "macos")]
 pub fn string_to_nsstring(s: String) -> id {
     unsafe {
         let ns_id: id = NSString::alloc(nil).init_str(&s);

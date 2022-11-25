@@ -1,6 +1,7 @@
-use cocoa::appkit::NSToolbar;
-use objc::msg_send;
 use tauri::Window;
+
+#[cfg(target_os = "macos")]
+use cocoa::appkit::{NSToolbar, NSWindow, NSWindowTitleVisibility};
 
 pub trait WindowExt {
     fn set_transparent_titlebar(&self);
@@ -14,7 +15,6 @@ impl WindowExt for Window {
     fn set_transparent_titlebar(&self) {
         #[cfg(target_os = "macos")]
         unsafe {
-            use cocoa::appkit::{NSWindow, NSWindowTitleVisibility};
             let ns_window = self.ns_window().unwrap() as cocoa::base::id;
             ns_window.setTitlebarAppearsTransparent_(cocoa::base::YES);
             ns_window.setTitleVisibility_(NSWindowTitleVisibility::NSWindowTitleHidden);
@@ -26,7 +26,6 @@ impl WindowExt for Window {
     fn set_toolbar_visible(&self, visible: bool) {
         #[cfg(target_os = "macos")]
         unsafe {
-            use cocoa::appkit::NSWindow;
             let id = self.ns_window().unwrap() as cocoa::base::id;
 
             let v = if visible {
@@ -40,7 +39,6 @@ impl WindowExt for Window {
     fn get_toolbar_visible(&self) -> bool {
         #[cfg(target_os = "macos")]
         unsafe {
-            use cocoa::appkit::NSWindow;
             let id = self.ns_window().unwrap() as cocoa::base::id;
             let res = id.toolbar().isVisible();
             if res == 1 {

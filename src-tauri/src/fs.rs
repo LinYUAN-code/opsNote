@@ -1,6 +1,13 @@
+use crate::utils::{c_str_to_string, string_to_nsstring};
 use std::fs;
 
-use crate::utils::{c_str_to_string, string_to_nsstring};
+#[cfg(target_os = "macos")]
+use cocoa::{
+    appkit::{NSApp, NSOpenPanel, NSSavePanel},
+    base::id,
+    foundation::NSString,
+    foundation::{NSArray, NSURL},
+};
 
 #[tauri::command]
 pub fn open_file_selector(
@@ -11,12 +18,6 @@ pub fn open_file_selector(
     println!("[open_file_selector]");
     #[cfg(target_os = "macos")]
     unsafe {
-        use cocoa::{
-            appkit::{NSApp, NSOpenPanel, NSSavePanel},
-            base::id,
-            foundation::NSString,
-            foundation::{NSArray, NSURL},
-        };
         let open_panel = NSOpenPanel::openPanel(NSApp());
         if is_directory_mode {
             open_panel.setCanChooseDirectories_(1);
