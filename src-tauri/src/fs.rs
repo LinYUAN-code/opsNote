@@ -1,6 +1,5 @@
+#[cfg(target_os = "macos")]
 use crate::utils::{c_str_to_string, string_to_nsstring};
-use std::fs;
-
 #[cfg(target_os = "macos")]
 use cocoa::{
     appkit::{NSApp, NSOpenPanel, NSSavePanel},
@@ -8,6 +7,7 @@ use cocoa::{
     foundation::NSString,
     foundation::{NSArray, NSURL},
 };
+use std::fs;
 
 #[tauri::command]
 pub fn open_file_selector(
@@ -55,7 +55,11 @@ pub fn open_file_selector(
     }
 
     #[cfg(target_os = "windows")]
-    unsafe {}
+    unsafe {
+        let mut ans = vec![];
+        println!("open_file_selector");
+        ans
+    }
 }
 
 #[tauri::command]

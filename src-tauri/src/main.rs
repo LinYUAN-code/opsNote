@@ -14,6 +14,7 @@ fn main() {
     builder
         .setup(|app| {
             let main_window = app.get_window("main").unwrap();
+            // 设置标题栏隐藏
             main_window.set_transparent_titlebar();
             Ok(())
         })
@@ -21,8 +22,8 @@ fn main() {
             WindowEvent::Resized(_) | WindowEvent::Moved(_) => {
                 let window = event.window();
                 #[cfg(any(target_os = "windows", target_os = "macos"))]
-                // created event，new window
                 {
+                    // 设置标题栏隐藏
                     window.set_transparent_titlebar();
                 }
                 #[cfg(target_os = "macos")]

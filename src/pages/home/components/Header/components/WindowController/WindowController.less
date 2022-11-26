@@ -1,0 +1,30 @@
+.window-controller {
+  position: absolute;
+  z-index: 999;
+  right: 0%;
+  top: 0%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  .button {
+    width: 45px;
+    height: 26px;
+    transition: all 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background-color: #e5e5e5;
+    }
+    .icon {
+      width: 10px;
+      height: 10px;
+    }
+  }
+  .red-hover {
+    &:hover {
+      background-color: #e81123 !important;
+      color: white;
+    }
+  }
+}
