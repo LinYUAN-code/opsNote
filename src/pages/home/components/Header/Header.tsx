@@ -16,10 +16,11 @@ export default function Header() {
 
   const [selectedTab, setSelectedTab] = useState(0);
   const handleMouseDown = (e: any) => {
-    if (e.target.dataset.action) return;
-    const m_window = (window as any).__TAURI__?.window.getCurrent();
-    m_window.startDragging();
-    e.preventDefault();
+    if (e.target.dataset.action === "dragging") {
+      const m_window = (window as any).__TAURI__?.window.getCurrent();
+      m_window.startDragging();
+      e.preventDefault();
+    }
   };
 
   // MAC 上使用系统的交通灯 windows上前端进行模拟
@@ -34,6 +35,7 @@ export default function Header() {
     <div className="Header-container" onMouseDown={handleMouseDown}>
       <BottomNavigation
         showLabels
+        data-action="dragging"
         value={selectedTab}
         onChange={(event, newValue) => {
           console.log(event, newValue);

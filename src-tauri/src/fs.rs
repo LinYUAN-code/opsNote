@@ -9,6 +9,8 @@ use cocoa::{
 };
 use std::fs;
 
+// 写的时候没注意看其实tauri已经实现了
+// windos上实现的话可以通过link windows库进行调用 实例化句柄实现
 #[tauri::command]
 pub fn open_file_selector(
     is_directory_mode: bool,

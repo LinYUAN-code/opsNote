@@ -1,5 +1,8 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { readTextFile, BaseDirectory } from "@tauri-apps/api/fs";
+import { open } from "@tauri-apps/api/dialog";
+import { desktopDir } from "@tauri-apps/api/path";
+import { path } from "@tauri-apps/api";
 
 interface openFileSelectorConfig {
   isSelectDirector?: boolean;
@@ -20,17 +23,32 @@ interface openFileSelectorConfig {
 
 export async function openFileSelector(
   config: openFileSelectorConfig
-): Promise<Array<string> | string> {
-  let list = (await invoke("open_file_selector", {
-    isDirectoryMode: !!config.isSelectDirector,
-    allowSelectMultipleFiles: !!config.allowMultiple,
-    allowsFileType: config.allowsFileType ? config.allowsFileType : [],
-  })) as Array<string>;
-  if (config.allowMultiple) {
-    return list;
-  } else {
-    return list[0];
-  }
+): Promise<Array<string> | string | null> {
+  const filters = !config.allowsFileType
+    ? []
+    : config.allowsFileType.map((v) => {
+        return {
+          name: v,
+          extensions: [v],
+        };
+      });
+  const selected = await open({
+    directory: !!config.isSelectDirector,
+    multiple: !!config.allowMultiple,
+    filters,
+    defaultPath: await desktopDir(),
+  });
+  return selected;
+  // let list = (await invoke("open_file_selector", {
+  //   isDirectoryMode: !!config.isSelectDirector,
+  //   allowSelectMultipleFiles: !!config.allowMultiple,
+  //   allowsFileType: config.allowsFileType ? config.allowsFileType : [],
+  // })) as Array<string>;
+  // if (config.allowMultiple) {
+  //   return list;
+  // } else {
+  //   return list[0];
+  // }
 }
 
 export function readFile(path: string): Promise<string> {
@@ -65,7 +83,7 @@ export class Path {
 
     let tmp = this.path.split(".");
     this._fileExtension = tmp[tmp.length - 1];
-    tmp = this.path.split("/");
+    tmp = this.path.split(path.sep);
     this._fileName = tmp[tmp.length - 1];
   }
   async init(): Promise<void> {
