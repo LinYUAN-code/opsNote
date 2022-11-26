@@ -27,7 +27,6 @@ export default function PathItem(props: any) {
       setPathList(res);
     } else if (!path.isDir) {
       const res = await path.readContent();
-      console.log(path.path);
       store.openningMarkdownFile = path;
       store.currentFileContent = res;
       globalEventBus.emit("openFile");
@@ -50,16 +49,22 @@ export default function PathItem(props: any) {
               {path.isEmptyDir ? (
                 <div className="icon-placeholder"></div>
               ) : pathList.length ? (
-                <ArrowDropDownIcon fontSize="small"></ArrowDropDownIcon>
+                <ArrowDropDownIcon
+                  fontSize="small"
+                  className="arrow-icon"
+                ></ArrowDropDownIcon>
               ) : (
-                <ArrowRightIcon fontSize="small"></ArrowRightIcon>
+                <ArrowRightIcon
+                  fontSize="small"
+                  className="arrow-icon"
+                ></ArrowRightIcon>
               )}
-              <FolderIcon></FolderIcon>
+              <FolderIcon className="folder-icon"></FolderIcon>
             </>
           ) : (
             <>
               <div className="icon-placeholder"></div>
-              <TextSnippetIcon></TextSnippetIcon>
+              <TextSnippetIcon className="markdown-icon"></TextSnippetIcon>
             </>
           )}
         </div>

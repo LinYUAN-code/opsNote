@@ -52,10 +52,10 @@ fn main() {
                 event.window().close().unwrap();
             }
             "save" => {
-                println!("save shortcut");
-                if let Err(err) = event.window().eval("window['handleRustEvent']('save')") {
-                    println!("shortcut save error: {:?}", err);
-                }
+                // println!("save shortcut");
+                // if let Err(err) = event.window().eval("window['handleRustEvent']('save')") {
+                //     println!("shortcut save error: {:?}", err);
+                // }
             }
             _ => {}
         })

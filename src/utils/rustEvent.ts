@@ -1,3 +1,5 @@
+import { register } from "@tauri-apps/api/globalShortcut";
+
 class RustEventBus {
   public cbMap: Record<string, Array<() => void>>;
   constructor() {
@@ -5,6 +7,9 @@ class RustEventBus {
       this.emit(eventName);
     };
     this.cbMap = {};
+    register("CommandOrControl+S", () => {
+      this.emit("save");
+    });
   }
   emit(eventName: string) {
     for (let cb of this.cbMap[eventName]) {

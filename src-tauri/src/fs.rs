@@ -75,7 +75,6 @@ pub fn read_file(path: String) -> Result<String, String> {
 
 #[tauri::command]
 pub fn write_file(path: String, content: String) -> Result<(), String> {
-    println!("{} {}", path, content);
     if let Ok(()) = fs::write(path, content.as_bytes()) {
         Ok(())
     } else {

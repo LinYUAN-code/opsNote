@@ -12,7 +12,9 @@ import { Platform } from "../../../../utils/const";
 import WindowController from "./components/WindowController/WindowController";
 
 export default function Header() {
-  const store = useStore() as globalData;
+  const store = useStore((state) => {
+    state.platform;
+  }) as globalData;
 
   const [selectedTab, setSelectedTab] = useState(0);
   const handleMouseDown = (e: any) => {
@@ -26,7 +28,7 @@ export default function Header() {
   // MAC 上使用系统的交通灯 windows上前端进行模拟
   useEffect(() => {
     (async () => {
-      store.platform = await getPlatform();
+      await store.getPlatform();
     })();
     return () => {};
   }, []);

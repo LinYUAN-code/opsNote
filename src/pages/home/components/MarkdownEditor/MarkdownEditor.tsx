@@ -30,6 +30,7 @@ export default function MarkdownEditor() {
   // 监听快捷键 -- 以及打开文件事件
   useEffect(() => {
     const cb1 = rustEvent.register("save", () => {
+      console.log("[save]");
       store.currentFileContent = vd!.getValue();
       store.openningMarkdownFile?.writeContent(store.currentFileContent);
     });
