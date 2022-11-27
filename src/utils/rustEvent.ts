@@ -16,9 +16,11 @@ class RustEventBus {
     listen("tauri://focus", async (e) => {
       const isRegisteredReq = await isRegistered("CommandOrControl+S");
       if (isRegisteredReq) return;
-      register("CommandOrControl+S", () => {
-        this.emit("save");
-      });
+      try {
+        register("CommandOrControl+S", () => {
+          this.emit("save");
+        });
+      } catch (e) {}
     });
     listen("tauri://blur", (e) => {
       unregister("CommandOrControl+S");
