@@ -1,4 +1,9 @@
-import { register } from "@tauri-apps/api/globalShortcut";
+import {
+  register,
+  unregister,
+  isRegistered,
+} from "@tauri-apps/api/globalShortcut";
+import { listen } from "@tauri-apps/api/event";
 
 class RustEventBus {
   public cbMap: Record<string, Array<() => void>>;
@@ -7,8 +12,16 @@ class RustEventBus {
       this.emit(eventName);
     };
     this.cbMap = {};
-    register("CommandOrControl+S", () => {
-      this.emit("save");
+
+    listen("tauri://focus", async (e) => {
+      const isRegisteredReq = await isRegistered("CommandOrControl+S");
+      if (isRegisteredReq) return;
+      register("CommandOrControl+S", () => {
+        this.emit("save");
+      });
+    });
+    listen("tauri://blur", (e) => {
+      unregister("CommandOrControl+S");
     });
   }
   emit(eventName: string) {

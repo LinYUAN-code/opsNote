@@ -3,7 +3,7 @@
     windows_subsystem = "windows"
 )]
 use app::{fs::*, menu::create_menu, tray::create_tray, window_ext::WindowExt};
-use tauri::{generate_handler, LogicalSize, Manager, SystemTrayEvent, WindowEvent};
+use tauri::{generate_handler, LogicalSize, Manager, SystemTrayEvent, Window, WindowEvent};
 
 fn main() {
     let builder = tauri::Builder::default();
@@ -11,13 +11,15 @@ fn main() {
     let tray = create_tray();
     let menu = create_menu(&context);
 
+    let builder = builder.setup(|app| {
+        let main_window = app.get_window("main").unwrap();
+        // 设置标题栏隐藏
+        main_window.set_transparent_titlebar();
+        Ok(())
+    });
+
     builder
-        .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
-            // 设置标题栏隐藏
-            main_window.set_transparent_titlebar();
-            Ok(())
-        })
+        .on_page_load(|w: Window, _| w.show().unwrap())
         .on_window_event(|event| match event.event() {
             WindowEvent::Resized(_) | WindowEvent::Moved(_) => {
                 let window = event.window();

@@ -67,7 +67,8 @@
         "focus": true,
         "center": true,
         "title": "linYuan",
-        "url": "/home/index.html"
+        "url": "/home/index.html",
+        "visible": false
       }
     ]
   }
