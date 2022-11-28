@@ -9,44 +9,33 @@ import Sider from "./Sider/Sider";
 import { globalEventBus, useStore } from "linyuan-storage";
 import { globalData } from "../../store/store";
 import rustEvent from "../../../../utils/rustEvent";
+import LinYuanEditor from "../../../../components/LinYuanEditor/LinYuanEditor";
 
 export default function MarkdownEditor() {
-  const [vd, setVd] = React.useState<Vditor>();
   const store = useStore((state: globalData) => {
     state.openningMarkdownFile;
   }) as globalData;
-  const initVditor = useCallback(async () => {
-    const vditor = await getVditor({
-      input: (value) => {
-        store.currentFileContent = value;
-      },
-    });
-    setVd(vditor);
-    vditor.setValue(store.currentFileContent);
-  }, []);
-  React.useEffect(() => {
-    initVditor();
-  }, []);
+  // 初始化编辑器
   // 监听快捷键 -- 以及打开文件事件
   useEffect(() => {
     const cb1 = rustEvent.register("save", () => {
       console.log("[save]");
-      store.currentFileContent = vd!.getValue();
+      // 获取编辑器中的文本值
       store.openningMarkdownFile?.writeContent(store.currentFileContent);
     });
     const cb2 = globalEventBus.register("openFile", () => {
-      vd?.setValue(store.currentFileContent);
+      console.log(store.currentFileContent);
     });
     return () => {
       rustEvent.remove("save", cb1);
       globalEventBus.remove("openFile", cb2);
     };
-  }, [vd]);
+  }, []);
 
   return (
     <div className="MarkdownEditor-container">
       <Sider></Sider>
-      <div id="vditor" className="vditor" />
+      <LinYuanEditor></LinYuanEditor>
     </div>
   );
 }
